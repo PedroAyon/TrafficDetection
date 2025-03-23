@@ -1,0 +1,10 @@
+{
+  "traffic_cam_id" : 1,
+  "conversion_factor" : 0.15,
+  "ref_bbox_height" : 40,
+  "video_path" : "video.mp4",
+  "start_datetime" : "2024-03-22T14:30:15Z",
+  "end_datetime" : "2024-03-22T14:35:15Z",
+  "line_orientation" : "horizontal",
+  "line_position_ratio" : 0.7
+}
