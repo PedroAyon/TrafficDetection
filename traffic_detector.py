@@ -134,9 +134,9 @@ class TrafficDetector:
                     y2 = int(center_y + h / 2)
 
                     if self.show_video:
-                        cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (230, 230, 230), 5)
+                        cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (230, 230, 230), 1)
                         cv2.putText(annotated_frame, label, (x1, y1 - 10),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 2, (230, 230, 230), 4)
+                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (230, 230, 230), 1)
 
                     # Update track history
                     track = self.track_history[track_id]
@@ -151,7 +151,7 @@ class TrafficDetector:
                                                self.ref_bbox_height, h, self.frame_skip)
                     if self.show_video:
                         cv2.putText(annotated_frame, f"{speed:.1f} km/h", (x1, y1 - 40),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
+                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
 
                     if self.line_orientation == "horizontal":
                         current_side = 0 if center_y < line_coord else 1
@@ -173,7 +173,7 @@ class TrafficDetector:
 
             if self.show_video:
                 cv2.putText(annotated_frame, f"Count: {self.vehicle_count}", (10, 90),
-                            cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 255, 255), 8)
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
                 cv2.imshow("Traffic Detection", annotated_frame)
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
