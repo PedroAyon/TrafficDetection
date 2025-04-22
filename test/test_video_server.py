@@ -10,16 +10,16 @@ app = Flask(__name__)
 video_queue = queue.Queue()
 
 # Populate the queue with some dummy video metadata
-video_queue.put({
-    "traffic_cam_id": 1,
-    "conversion_factor": 0.15,
-    "ref_bbox_height": 40,
-    "video_filename": "4.mp4",
-    "start_datetime": "2024-03-22T14:40:15Z",
-    "end_datetime": "2024-03-22T14:45:15Z",
-    "line_orientation": "horizontal",
-    "line_position_ratio": 0.7
-})
+# video_queue.put({
+#     "traffic_cam_id": 1,
+#     "conversion_factor": 0.15,
+#     "ref_bbox_height": 40,
+#     "video_filename": "4.mp4",
+#     "start_datetime": "2024-03-22T14:40:15Z",
+#     "end_datetime": "2024-03-22T14:45:15Z",
+#     "line_orientation": "horizontal",
+#     "line_position_ratio": 0.7
+# })
 video_queue.put({
     "traffic_cam_id": 2,
     "conversion_factor": 0.10,

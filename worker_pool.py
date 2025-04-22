@@ -33,10 +33,11 @@ async def video_worker(worker_id: int, video_queue: asyncio.Queue, executor: con
                 ref_bbox_height=video_obj.ref_bbox_height,
                 line_orientation=video_obj.line_orientation,
                 line_position_ratio=video_obj.line_position_ratio,
-                show_video=False,
+                # show_video=False,
+                show_video=True,
                 cooldown_duration=2.0,
                 vehicle_classes={"car", "truck", "bus", "motorcycle", "van"},
-                frame_skip=2,
+                frame_skip=1,
                 target_width=Resolution.R480p.width,
                 target_height=Resolution.R480p.height
             )
@@ -60,7 +61,7 @@ class VideoProcessor:
         workers: List of worker tasks.
     """
 
-    def __init__(self, num_workers: int):
+    def __init__(self, num_workers: int=1):
         self.num_workers = num_workers
         self.video_queue = asyncio.Queue()
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_workers)
