@@ -8,6 +8,7 @@ class Resolution(Enum):
     R480p  = (854, 480)    # SD
     R360p  = (640, 360)    # SD
     R240p  = (426, 240)    # SD
+    Default = R480p
 
     @property
     def width(self):

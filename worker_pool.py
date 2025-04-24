@@ -38,8 +38,8 @@ async def video_worker(worker_id: int, video_queue: asyncio.Queue, executor: con
                 cooldown_duration=2.0,
                 vehicle_classes={"car", "truck", "bus", "motorcycle", "van"},
                 frame_skip=1,
-                target_width=Resolution.R480p.width,
-                target_height=Resolution.R480p.height
+                target_width=Resolution.Default.width,
+                target_height=Resolution.Default.height
             )
             result = await loop.run_in_executor(executor, detector.process_video)
             print(f"Worker {worker_id}: Finished processing video from camera {video_obj.traffic_cam_id}")
