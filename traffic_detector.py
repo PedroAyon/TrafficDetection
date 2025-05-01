@@ -1,38 +1,39 @@
 import cv2
 import numpy as np
 import time
+import datetime
 from collections import defaultdict
 
+from models import Line
+
+
 class TrafficDetector:
-    def __init__(self, video_path: str, model, conversion_factor: float = 0.05,
-                 ref_bbox_height: int = 40, line_orientation: str = "horizontal",
-                 line_position_ratio: float = 0.7, show_video: bool = False,
-                 cooldown_duration: float = 2.0, vehicle_classes: set = None,
-                 frame_skip: int = 1, target_width: int = 1280, target_height: int = 720):
+    def __init__(self, video_path: str, model, start_ref_line: Line, finish_ref_line: Line, ref_distance: int, track_orientation: str,
+                 show_video: bool = False, cooldown_duration: float = 2.0, frame_skip: int = 1,
+                 vehicle_classes: set = None, target_width: int = 1280, target_height: int = 720):
         """
         Initialize the traffic detector.
 
         :param video_path: Path to the video file.
         :param model: The AI model instance (e.g., YOLO) used for detection.
-        :param conversion_factor: Base conversion factor (meters per pixel).
-        :param ref_bbox_height: Reference bounding box height (pixels) for calibration.
-        :param line_orientation: 'horizontal' or 'vertical' for the counting line.
-        :param line_position_ratio: For horizontal, a fraction of frame height;
-                                    for vertical, a fraction of frame width.
+        :param start_ref_line: Start reference line to start measuring vehicle speed.
+        :param finish_ref_line: Finish reference line to measure vehicle speed knowing the time it took for the car to cross from start to finish and the distance between the reference lines.
+        :param ref_distance: Distance in meters between the reference lines.
+        :param track_orientation: Orientation of the reference lines (vertical, horizontal).
         :param show_video: If True, display the annotated video during processing.
         :param cooldown_duration: Minimum time (in seconds) between consecutive counts per vehicle.
-        :param vehicle_classes: Set of vehicle class names to detect.
         :param frame_skip: Process every nth frame (e.g., 1=every frame, 2=every other frame).
+        :param vehicle_classes: Set of vehicle class names to detect.
         :param target_width: The target width for the output video frame.
         :param target_height: The target height for the output video frame.
                              If the original video is smaller, the dimensions are not changed.
         """
         self.video_path = video_path
         self.model = model
-        self.conversion_factor = conversion_factor
-        self.ref_bbox_height = ref_bbox_height
-        self.line_orientation = line_orientation
-        self.line_position_ratio = line_position_ratio
+        self.start_ref_line = start_ref_line
+        self.finish_ref_line = finish_ref_line
+        self.ref_distance = ref_distance
+        self.track_orientation = track_orientation
         self.show_video = show_video
         self.cooldown_duration = cooldown_duration
         self.vehicle_classes = vehicle_classes or {"car", "truck", "bus", "motorcycle", "van"}
@@ -46,20 +47,39 @@ class TrafficDetector:
         self.speeds = []  # list to store speed values for averaging
 
     @staticmethod
-    def compute_speed(track: list, fps: float, conv_factor: float,
-                      ref_bbox_height: float, box_height: float, frame_skip: int = 1) -> float:
+    def compute_speed(start_time: datetime.datetime, finish_time: datetime.datetime,
+                      ref_distance: float) -> float:
         """
-        Compute speed in km/h based on the last two positions in the track.
-        The speed is corrected by dividing by the frame_skip factor.
+        Compute speed of a vehicle based on the time difference and reference distance.
+
+        :param start_time: Timestamp when the vehicle crossed the start reference line.
+        :param finish_time: Timestamp when the vehicle crossed the finish reference line.
+        :param ref_distance: Real-world distance between the two reference lines in meters.
+        :return: Speed in km/h.
         """
-        conv_factor = conv_factor * ref_bbox_height / box_height
-        if len(track) >= 2:
-            (x1, y1), (x2, y2) = track[-2], track[-1]
-            pixel_distance = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-            distance_meters = pixel_distance * conv_factor
-            speed_mps = distance_meters * fps
-            return (speed_mps * 3.6) / frame_skip  # km/h
-        return 0.0
+        time_diff = (finish_time - start_time).total_seconds()
+        if time_diff <= 0:
+            return 0.0
+        speed_m_per_s = ref_distance / time_diff
+        return speed_m_per_s * 3.6
+
+    @staticmethod
+    def has_vehicle_crossed_line(ref_line: Line, track: list) -> bool:
+        """
+        Check if the last two track points lie on opposite sides of the line.
+        :param ref_line: Reference line.
+        :param track: Vehicle position track list.
+        """
+        if len(track) < 2:
+            return False
+        p1 = track[-2]
+        p2 = track[-1]
+        ax, ay = ref_line.A.x, ref_line.A.y
+        bx, by = ref_line.B.x, ref_line.B.y
+        # Line cross-product test
+        val1 = (bx - ax) * (p1[1] - ay) - (by - ay) * (p1[0] - ax)
+        val2 = (bx - ax) * (p2[1] - ay) - (by - ay) * (p2[0] - ax)
+        return val1 * val2 < 0
 
     def process_video(self) -> dict:
         """
