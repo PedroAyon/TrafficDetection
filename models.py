@@ -1,4 +1,19 @@
 from enum import Enum
+from dataclasses import dataclass
+
+@dataclass
+class Point:
+    x: float
+    y: float
+
+@dataclass
+class Line:
+    A: Point
+    B: Point
+
+    def __init__(self, ax: float, ay: float, bx: float, by: float):
+        self.A = Point(ax, ay)
+        self.B = Point(bx, by)
 
 class Resolution(Enum):
     R2160p = (3840, 2160)  # 4K

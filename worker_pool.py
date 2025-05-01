@@ -4,7 +4,7 @@ from ai_model import AIModelFactory
 from data_storage import send_to_data_server
 from traffic_detector import TrafficDetector
 from video import Video
-from resolutions import Resolution
+from models import Resolution
 
 
 async def video_worker(worker_id: int, video_queue: asyncio.Queue, executor: concurrent.futures.Executor) -> None:
