@@ -1,6 +1,6 @@
 import aiohttp
 import time
-from video import Video
+from models import Video
 
 DATA_SERVER_REGISTER_ENDPOINT_URL = "http://localhost:6000/new_register"
 

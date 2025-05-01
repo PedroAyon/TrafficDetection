@@ -3,7 +3,7 @@ import concurrent.futures
 from ai_model import AIModelFactory
 from data_storage import send_to_data_server
 from traffic_detector import TrafficDetector
-from video import Video
+from models import Video
 from models import Resolution
 
 
@@ -29,15 +29,19 @@ async def video_worker(worker_id: int, video_queue: asyncio.Queue, executor: con
             detector = TrafficDetector(
                 video_path=video_obj.video_path,
                 model=local_model,
-                conversion_factor=video_obj.conversion_factor,
-                ref_bbox_height=video_obj.ref_bbox_height,
-                line_orientation=video_obj.line_orientation,
-                line_position_ratio=video_obj.line_position_ratio,
-                # show_video=False,
+                # — new speed‐measurement params —
+                start_ref_line=video_obj.start_ref_line,
+                finish_ref_line=video_obj.finish_ref_line,
+                ref_distance=video_obj.ref_distance,
+                track_orientation=video_obj.track_orientation,
+
+                # visualization / filtering
                 show_video=True,
                 cooldown_duration=2.0,
                 vehicle_classes={"car", "truck", "bus", "motorcycle", "van"},
                 frame_skip=1,
+
+                # output resolution
                 target_width=Resolution.Default.width,
                 target_height=Resolution.Default.height
             )

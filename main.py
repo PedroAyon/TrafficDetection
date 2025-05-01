@@ -4,7 +4,7 @@ import os
 import json
 
 from worker_pool import VideoProcessor
-from video import Video
+from models import Video
 
 API_URL = "http://localhost:5000/get_video_from_queue"
 

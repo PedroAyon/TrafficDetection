@@ -22,14 +22,26 @@ video_queue = queue.Queue()
 # })
 video_queue.put({
     "traffic_cam_id": 2,
-    "conversion_factor": 0.10,
-    "ref_bbox_height": 35,
     "video_filename": "5.avi",
     "start_datetime": "2024-03-22T14:40:15Z",
-    "end_datetime": "2024-03-22T14:45:15Z",
-    "line_orientation": "horizontal",
-    "line_position_ratio": 0.7
+    "end_datetime":   "2024-03-22T14:45:15Z",
+
+    "start_ref_line": {
+        "ax": 297,
+        "ay": 234,
+        "bx": 560,
+        "by": 241
+    },
+    "finish_ref_line": {
+        "ax":  83,
+        "ay": 360,
+        "bx": 779,
+        "by": 395
+    },
+    "ref_distance":       40.0,
+    "track_orientation": "horizontal",
 })
+
 
 # Simulated directory where videos are stored.
 VIDEO_DIRECTORY = "/home/pedro-ayon/dev/ComputoUbicuo/Proyecto/TrafficDetection/test/video"  # Ensure this directory exists and contains the sample videos
