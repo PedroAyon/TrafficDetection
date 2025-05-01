@@ -94,7 +94,7 @@ class TrafficDetector:
             current_time = video_start_time + datetime.timedelta(seconds=frame_id / fps)
 
             if results[0].boxes is not None and results[0].boxes.id is not None:
-                boxes = results[0].boxes.xywh.cpu()
+                boxes = results[0].boxes.xywh.cpu()  # center_x, center_y, w, h
                 ids = results[0].boxes.id.int().cpu().tolist()
                 classes = results[0].boxes.cls.cpu().tolist()
 
@@ -103,7 +103,19 @@ class TrafficDetector:
                     if label not in self.vehicle_classes:
                         continue
 
-                    cx, cy = float(box[0]), float(box[1])
+                    cx, cy, w, h = map(float, box)
+                    # compute corners
+                    x1 = int(cx - w / 2)
+                    y1 = int(cy - h / 2)
+                    x2 = int(cx + w / 2)
+                    y2 = int(cy + h / 2)
+
+                    if self.show_video:
+                        cv2.rectangle(annotated, (x1, y1), (x2, y2), (230, 230, 230), 1)
+                        cv2.putText(annotated, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX,
+                                    0.6, (230, 230, 230), 2)
+
+                    # update track history
                     hist = self.track_history[track_id]
                     hist.append((cx, cy))
                     if len(hist) > 30:
@@ -114,24 +126,20 @@ class TrafficDetector:
 
                     # when crossing start line
                     if crossed_start:
-                        # if finish first recorded, compute reversed direction speed
                         if track_id in self.finish_times:
                             finish_t = self.finish_times.pop(track_id)
                             speed = self.compute_speed(current_time, finish_t, self.ref_distance)
                             self.speeds.append(speed)
-                        # normal start record
                         elif track_id not in self.start_times:
                             self.start_times[track_id] = current_time
 
                     # when crossing finish line, count always
                     if crossed_finish:
                         self.vehicle_count += 1
-                        # if start first recorded, compute forward speed
                         if track_id in self.start_times:
                             start_t = self.start_times.pop(track_id)
                             speed = self.compute_speed(start_t, current_time, self.ref_distance)
                             self.speeds.append(speed)
-                        # otherwise record finish for reverse direction
                         elif track_id not in self.finish_times:
                             self.finish_times[track_id] = current_time
 
