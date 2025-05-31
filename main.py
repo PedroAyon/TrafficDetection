@@ -6,7 +6,7 @@ import json
 from worker_pool import VideoProcessor
 from models import Video
 
-API_URL = "http://localhost:5000/get_video_from_queue"
+VIDEO_SERVER_URL = "https://safe-panda-enabled.ngrok-free.app/get_video_from_queue"
 
 DOWNLOAD_FOLDER = "downloaded_videos"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
@@ -18,7 +18,7 @@ async def fetch_video(session: aiohttp.ClientSession):
     and includes the metadata as a JSON string in the 'X-Video-Metadata' header.
     """
     try:
-        async with session.get(API_URL) as response:
+        async with session.get(VIDEO_SERVER_URL) as response:
             if response.status != 200:
                 print(f"API responded with status {response.status}")
                 return None, None

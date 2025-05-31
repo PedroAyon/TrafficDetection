@@ -2,7 +2,7 @@ import aiohttp
 import time
 from models import Video
 
-DATA_SERVER_REGISTER_ENDPOINT_URL = "http://localhost:6000/new_register"
+DATA_SERVER_REGISTER_ENDPOINT_URL = "https://insect-promoted-gnu.ngrok-free.app/new_register"
 
 
 async def send_to_data_server(video_obj: Video, result: dict):
