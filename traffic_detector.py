@@ -55,17 +55,16 @@ class TrafficDetector:
     def process_video(self) -> dict:
         cap = cv2.VideoCapture(self.video_path)
         if not cap.isOpened():
-            raise IOError("Video file not found or cannot be opened!")
+            raise IOError(f"Video file not found or cannot be opened!, video path: {self.video_path}" )
 
         fps = cap.get(cv2.CAP_PROP_FPS)
         ret, sample_frame = cap.read()
         if not ret:
             raise IOError("Cannot read a frame from the video.")
-        orig_h, orig_w = sample_frame.shape[:2]
         cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
-        scale = min(self.target_width / orig_w, self.target_height / orig_h, 1.0)
-        new_w, new_h = int(orig_w * scale), int(orig_h * scale)
+        new_w, new_h = self.target_width, self.target_height
+
 
         video_start_time = datetime.datetime.now()
         frame_id = 0

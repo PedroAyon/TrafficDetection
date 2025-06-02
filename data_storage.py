@@ -2,7 +2,7 @@ import aiohttp
 import time
 from models import Video
 
-DATA_SERVER_REGISTER_ENDPOINT_URL = "https://insect-promoted-gnu.ngrok-free.app/new_register"
+DATA_SERVER_REGISTER_ENDPOINT_URL = "https://insect-promoted-gnu.ngrok-free.app/record"
 
 
 async def send_to_data_server(video_obj: Video, result: dict):
@@ -15,7 +15,7 @@ async def send_to_data_server(video_obj: Video, result: dict):
     }
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.put(DATA_SERVER_REGISTER_ENDPOINT_URL, json=payload) as resp:
+            async with session.post(DATA_SERVER_REGISTER_ENDPOINT_URL, json=payload) as resp:
                 if resp.status == 200:
                     print(f"[{time.strftime('%X')}] Successfully sent data: {payload}")
                 else:

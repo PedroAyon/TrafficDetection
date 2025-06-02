@@ -6,7 +6,7 @@ import json
 from worker_pool import VideoProcessor
 from models import Video
 
-VIDEO_SERVER_URL = "https://safe-panda-enabled.ngrok-free.app/get_video_from_queue"
+VIDEO_SERVER_URL = "https://safe-panda-enabled.ngrok-free.app/videos"
 
 DOWNLOAD_FOLDER = "downloaded_videos"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
@@ -32,6 +32,7 @@ async def fetch_video(session: aiohttp.ClientSession):
 
             # Read the video file (binary data) from the response.
             video_data = await response.read()
+            print(metadata)
             return metadata, video_data
 
     except Exception as e:

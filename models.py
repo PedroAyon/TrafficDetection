@@ -27,7 +27,7 @@ class Resolution(Enum):
     R480p = (854, 480)  # SD
     R360p = (640, 360)  # SD
     R240p = (426, 240)  # SD
-    Default = R480p
+    Default = (320, 240)
 
     @property
     def width(self):
@@ -44,20 +44,18 @@ class Video:
     video_path: str
     start_datetime: datetime
     end_datetime: datetime
-
-    # — new fields for speed measurement —
     start_ref_line: Line
     finish_ref_line: Line
-    ref_distance: int  # meters between the two lines
-    track_orientation: str = "horizontal"  # or "vertical"
+    ref_distance: int
+    track_orientation: str = "horizontal"
 
     @classmethod
     def from_json(cls, data: dict):
-        # parse ISO8601 timestamps
-        start_dt = datetime.fromisoformat(data["start_datetime"].replace("Z", "+00:00"))
-        end_dt = datetime.fromisoformat(data["end_datetime"].replace("Z", "+00:00"))
+        # Convert timestamps (float) to datetime
+        start_dt = datetime.fromtimestamp(data["start_time"])
+        end_dt = datetime.fromtimestamp(data["end_time"])
 
-        # build Line objects from their endpoint dicts
+        # Convert to Line objects
         s = data["start_ref_line"]
         f = data["finish_ref_line"]
         start_line = Line(s["ax"], s["ay"], s["bx"], s["by"])
@@ -65,7 +63,7 @@ class Video:
 
         return cls(
             traffic_cam_id=data["traffic_cam_id"],
-            video_path=data["video_path"],
+            video_path=f"downloaded_videos/{data['video_filename']}",
             start_datetime=start_dt,
             end_datetime=end_dt,
             start_ref_line=start_line,

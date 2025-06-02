@@ -46,7 +46,7 @@ async def video_worker(worker_id: int, video_queue: asyncio.Queue, executor: con
                 target_height=Resolution.Default.height
             )
             result = await loop.run_in_executor(executor, detector.process_video)
-            print(f"Worker {worker_id}: Finished processing video from camera {video_obj.traffic_cam_id}")
+            print(f"Worker {worker_id}: Finished processing video from camera {video_obj.traffic_cam_id}, result: {result}")
             await send_to_data_server(video_obj, result)
         except Exception as e:
             print(f"Worker {worker_id}: Encountered an error: {e}")

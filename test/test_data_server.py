@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-@app.route('/new_register', methods=['PUT'])
+@app.route('/record', methods=['POST'])
 def new_register():
     data = request.get_json()
     if not data:
